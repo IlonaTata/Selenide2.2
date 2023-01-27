@@ -14,5 +14,5 @@ install:
 
 build_script:
   - chmod +x gradlew
-  - gradlew test -Selenide.headless=true
+  - ./gradlew test --info "-Dselenide.headless=true"
 
