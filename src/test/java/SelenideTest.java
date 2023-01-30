@@ -23,31 +23,31 @@ public class SelenideTest {
         Configuration.holdBrowserOpen = true;
         open("http://localhost:9999");
     }
-
+    public String generateDate(long addDays, String pattern) {
+        return LocalDate.now().plusDays(addDays).format(DateTimeFormatter.ofPattern(pattern));
+    }
 
     @Test
     void shouldDeliveryCard() {
         $("[data-test-id='city'] input").setValue("Казань");
         $("[data-test-id='date'] input").doubleClick().sendKeys(Keys.BACK_SPACE);
-        LocalDate dateOfDelivery = LocalDate.now().plusDays(3);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-        String date = formatter.format(dateOfDelivery);
+        String date=generateDate(3,"dd.MM.yyyy");
         $("[data-test-id='date'] input").setValue(date);
         $("[data-test-id='name'] input").setValue("Иванов Иван");
         $("[data-test-id='phone'] input").setValue("+79023216547");
         $("[data-test-id='agreement']").click();
         $x("//*[@class='button__content']").click();
-        $("[data-test-id='notification']").should(Condition.visible, Duration.ofSeconds(15));
-        $(byText("Встреча успешно забронирована на" + date));
+        $(".notification__content")
+                .shouldHave(Condition.text("Встреча успешно забронирована на " + date), Duration.ofSeconds(15))
+                .shouldBe(Condition.visible);
+
     }
 
     @Test
     void shouldDeliveryCardWithNotExistCity() {
         $("[data-test-id='city'] input").setValue("Молоко");
         $("[data-test-id='date'] input").doubleClick().sendKeys(Keys.BACK_SPACE);
-        LocalDate dateOfDelivery = LocalDate.now().plusDays(3);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-        String date = formatter.format(dateOfDelivery);
+        String date = generateDate(3,"dd.MM.yyyy");
         $("[data-test-id='date'] input").setValue(date);
         $("[data-test-id='name'] input").setValue("Иванов Иван");
         $("[data-test-id='phone'] input").setValue("+79023216547");
@@ -74,9 +74,7 @@ public class SelenideTest {
     void shouldDeliveryCardWithWrongName() {
         $("[data-test-id='city'] input").setValue("Москва");
         $("[data-test-id='date'] input").doubleClick().sendKeys(Keys.BACK_SPACE);
-        LocalDate dateOfDelivery = LocalDate.now().plusDays(3);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-        String date = formatter.format(dateOfDelivery);
+        String date = generateDate(3,"dd.MM.yyyy");
         $("[data-test-id='date'] input").setValue(date);
         $("[data-test-id='name'] input").setValue("Ivanov Ivan");
         $("[data-test-id='phone'] input").setValue("+79023216547");
@@ -90,25 +88,24 @@ public class SelenideTest {
     void shouldDeliveryCardWhereNameWithOneLetter() {
         $("[data-test-id='city'] input").setValue("Казань");
         $("[data-test-id='date'] input").doubleClick().sendKeys(Keys.BACK_SPACE);
-        LocalDate dateOfDelivery = LocalDate.now().plusDays(3);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-        String date = formatter.format(dateOfDelivery);
+        String date = generateDate(3,"dd.MM.yyyy");
         $("[data-test-id='date'] input").setValue(date);
         $("[data-test-id='name'] input").setValue("И");
         $("[data-test-id='phone'] input").setValue("+79023216547");
         $("[data-test-id='agreement']").click();
         $x("//*[@class='button__content']").click();
-        $("[data-test-id='notification']").should(Condition.visible, Duration.ofSeconds(15));
-        $(byText("Встреча успешно забронирована на" + date));
+        $(".notification__content")
+                .shouldHave(Condition.text("Встреча успешно забронирована на " + date), Duration.ofSeconds(15))
+                .shouldBe(Condition.visible);
+      //  $("[data-test-id='notification']").should(Condition.visible, Duration.ofSeconds(15));
+      //  $(byText("Встреча успешно забронирована на" + date));
     }
 
     @Test
     void shouldDeliveryCardWithWrongPhone() {
         $("[data-test-id='city'] input").setValue("Москва");
         $("[data-test-id='date'] input").doubleClick().sendKeys(Keys.BACK_SPACE);
-        LocalDate dateOfDelivery = LocalDate.now().plusDays(3);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-        String date = formatter.format(dateOfDelivery);
+        String date = generateDate(3,"dd.MM.yyyy");
         $("[data-test-id='date'] input").setValue(date);
         $("[data-test-id='name'] input").setValue("Иванов Иван");
         $("[data-test-id='phone'] input").setValue("89023216547");
@@ -123,16 +120,17 @@ public class SelenideTest {
         $("[data-test-id='city'] input").setValue("Мо");
         $$(".menu-item__control").find(exactText("Кемерово")).click();
         $("[data-test-id='date'] input").doubleClick().sendKeys(Keys.BACK_SPACE);
-        LocalDate dateOfDelivery = LocalDate.now().plusDays(3);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-        String date = formatter.format(dateOfDelivery);
+        String date = generateDate(3,"dd.MM.yyyy");
         $("[data-test-id='date'] input").setValue(date);
         $("[data-test-id='name'] input").setValue("Иванов Иван");
         $("[data-test-id='phone'] input").setValue("+79023216547");
         $("[data-test-id='agreement']").click();
         $x("//*[@class='button__content']").click();
-        $("[data-test-id='notification']").should(Condition.visible, Duration.ofSeconds(15));
-        $(byText("Встреча успешно забронирована на" + date));
+        $(".notification__content")
+                .shouldHave(Condition.text("Встреча успешно забронирована на " + date), Duration.ofSeconds(15))
+                .shouldBe(Condition.visible);
+      //  $("[data-test-id='notification']").should(Condition.visible, Duration.ofSeconds(15));
+      //  $(byText("Встреча успешно забронирована на" + date));
     }
 
     @Test
@@ -146,14 +144,14 @@ public class SelenideTest {
         $(".input__icon").click();
         if (dateOfDelivery.getMonthValue() - currentDate.getMonthValue() == 1) {
             $("[data-step='1']").click();
-        }
+       }
         $$("td.calendar__day").find(exactText(day)).click();
 
         $("[data-test-id='name'] input").setValue("Иванов Иван");
         $("[data-test-id='phone'] input").setValue("+79023216547");
         $("[data-test-id='agreement']").click();
         $x("//*[@class='button__content']").click();
-        $("[data-test-id='notification']").should(Condition.visible, Duration.ofSeconds(15));
-        $(byText("Встреча успешно забронирована на" + dateOfDelivery));
+       $("[data-test-id='notification']").should(Condition.visible, Duration.ofSeconds(15));
+       $(byText("Встреча успешно забронирована на" + dateOfDelivery));
     }
 }
